@@ -1,0 +1,37 @@
+[
+    {
+      "id": 1,
+      "title": "Math Homework - Algebra Basics",
+      "description": "Complete exercises 1-10 on page 15 of the textbook.",
+      "subject": "Mathematics",
+      "teacherId": 1,
+      "classId": 1,
+      "dueDate": "2024-09-15T23:59:59Z",
+      "createdAt": "2024-09-01T10:00:00Z",
+      "updatedAt": "2024-09-01T10:00:00Z",
+      "submissions": [
+        {
+          "studentId": 4,
+          "content": "Here are my solutions to the algebra exercises...",
+          "submittedAt": "2024-09-14T18:30:00Z"
+        },
+        {
+          "studentId": 5,
+          "content": "I've completed the homework, here are my answers...",
+          "submittedAt": "2024-09-15T20:45:00Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "English Essay - Shakespeare's Sonnets",
+      "description": "Write a 500-word essay analyzing Sonnet 18 by William Shakespeare.",
+      "subject": "English Literature",
+      "teacherId": 1,
+      "classId": 2,
+      "dueDate": "2024-09-20T23:59:59Z",
+      "createdAt": "2024-09-05T14:30:00Z",
+      "updatedAt": "2024-09-05T14:30:00Z",
+      "submissions": []
+    }
+  ]

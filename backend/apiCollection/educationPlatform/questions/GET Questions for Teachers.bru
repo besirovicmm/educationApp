@@ -1,0 +1,19 @@
+meta {
+  name: Get All Questions for Teacher
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5001/api/questions?classId=2
+  body: none
+  auth: bearer
+}
+
+params:query {
+  classId: 2
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InRlYWNoZXIiLCJjbGFzc0lkIjoxLCJpYXQiOjE3MjUyMDU0NTZ9.QvqRlu-pqxRCBBgRmDjwFwBXHLC4j7cIemNbl_HtQCo
+}

@@ -1,0 +1,15 @@
+meta {
+  name: All Teacher
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5001/api/assignments
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InRlYWNoZXIiLCJjbGFzc0lkIjoxLCJpYXQiOjE3MjUyMDU0NTZ9.QvqRlu-pqxRCBBgRmDjwFwBXHLC4j7cIemNbl_HtQCo
+}

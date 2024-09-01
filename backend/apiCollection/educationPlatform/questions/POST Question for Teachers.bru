@@ -1,0 +1,23 @@
+meta {
+  name: Create Question for Teacher
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5001/api/questions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InRlYWNoZXIiLCJjbGFzc0lkIjoxLCJpYXQiOjE3MjUyMDU0NTZ9.QvqRlu-pqxRCBBgRmDjwFwBXHLC4j7cIemNbl_HtQCo
+}
+
+body:json {
+  {
+    "title": "What is the capital of France?",
+    "content": "This question asks for the capital of France.",
+    "classId": 2
+  }
+}

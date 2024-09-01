@@ -1,0 +1,15 @@
+meta {
+  name: Get All Questions for Student
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5001/api/questions?classId=1
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InN0dWRlbnQiLCJjbGFzc0lkIjoxLCJpYXQiOjE3MjUyMDUzOTl9.6dMvNfi4fE81_meuh2M0Cs43bKq49lQPe4HJ7P8CnQs
+}

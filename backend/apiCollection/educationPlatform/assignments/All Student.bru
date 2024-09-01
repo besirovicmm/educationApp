@@ -1,0 +1,15 @@
+meta {
+  name: All Student
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5001/api/assignments
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InN0dWRlbnQiLCJjbGFzc0lkIjoxLCJpYXQiOjE3MjUyMDUzOTl9.6dMvNfi4fE81_meuh2M0Cs43bKq49lQPe4HJ7P8CnQs
+}

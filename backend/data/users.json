@@ -1,0 +1,48 @@
+[
+      {
+        "id": 1,
+        "username": "prof_smith",
+        "password": "123456",
+        "firstName": "John",
+        "lastName": "Smith",
+        "email": "john.smith@example.edu",
+        "role": "teacher"
+      },
+      {
+        "id": 2,
+        "username": "dr_johnson",
+        "password": "$2a$10$9OLNRxdWWLe.x7vPAuEkX.QZRW0DYo1rvxsLwLyYHnICxVene6Ee.",
+        "firstName": "Emily",
+        "lastName": "Johnson",
+        "email": "emily.johnson@example.edu",
+        "role": "teacher"
+      },
+      {
+        "id": 3,
+        "username": "alice_student",
+        "password": "$2a$10$NLzQPE3yVOmXLDnBQJzSDOqlLpjksnMHC7rAUTjhR9Cg4VfUcqbi2",
+        "firstName": "Alice",
+        "lastName": "Brown",
+        "email": "alice.brown@example.edu",
+        "role": "student"
+      },
+      {
+        "id": 4,
+        "username": "bob_student",
+        "password": "123456",
+        "firstName": "Bob",
+        "lastName": "Wilson",
+        "email": "bob.wilson@example.edu",
+        "role": "student",
+        "classId": 1
+      },
+      {
+        "id": 5,
+        "username": "carol_student",
+        "password": "$2a$10$6lhY0ZEIcaFr4ZBCwQCv0eRoXdAWFDq1jt1GjUQEVpR8Qx9F1IQ.S",
+        "firstName": "Carol",
+        "lastName": "Davis",
+        "email": "carol.davis@example.edu",
+        "role": "student"
+      }
+    ]
