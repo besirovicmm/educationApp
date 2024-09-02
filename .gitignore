@@ -1,0 +1,15 @@
+frontend/.DS_Store
+frontend/.DS_Store?
+backend/.DS_Store
+backend/.DS_Store?
+._*
+.vscode
+.Spotlight-V100
+.Trashes
+**/yarn-error.log
+ehthumbs.db
+Thumbs.db
+
+frontend/node_modules/
+backend/node_modules/
+node_modules

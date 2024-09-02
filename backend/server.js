@@ -12,6 +12,7 @@ const questionRoutes = require('./questions/index');
 const assignmentRoutes = require('./assignments/index');
 const commentRoutes = require('./comments/index');
 const classRoutes= require('./classes/index');
+const userRoutes = require('./users/index');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/classes', classRoutes);
+app.use('/api/users', userRoutes);
 
 const PORT = 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

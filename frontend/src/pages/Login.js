@@ -28,7 +28,11 @@ function Login() {
       onSuccess: (data) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/');
+        if (data.user.role === 'teacher') {
+          navigate('/');
+        } else if (data.user.role === 'student') {
+          navigate(`/class/${data.user.classId}`);
+        }
       },
       onError: (error) => {
         console.error('Login failed:', error);
@@ -39,6 +43,10 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     loginMutation.mutate({ username, password });
+  };
+
+  const handleSignUp = () => {
+    navigate('/register');
   };
 
   return (
@@ -94,6 +102,18 @@ function Login() {
                 Login failed. Please check your credentials and try again.
               </Alert>
             )}
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Don't have an account?
+              </Typography>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={handleSignUp}
+              >
+                Sign Up
+              </Button>
+            </Box>
           </Box>
         </Paper>
       </Box>

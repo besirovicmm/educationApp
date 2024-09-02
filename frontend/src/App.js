@@ -15,7 +15,9 @@ import CreateAssignment from './pages/CreateAssignment';
 import QuestionsList from './pages/QuestionsList'; 
 import QuestionDetail from './pages/QuestionDetail'; 
 import CreateQuestion from './pages/CreateQuestion'; 
+import UserRegistration from './components/UserRegistration';
 import PrivateRoute from './components/PrivateRoute';
+
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<UserRegistration />} />
+        <Route path="/" element={<ClassList />} />
         <Route 
           path="/" 
           element={
