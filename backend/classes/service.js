@@ -12,9 +12,7 @@ class ClassesService {
 
   async createClass(classData) {
     const [newClass] = await knex('classes').insert({
-      ...classData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      ...classData
     }).returning('*');
     return newClass;
   }
@@ -24,7 +22,7 @@ class ClassesService {
       .where('id', id)
       .update({
         ...classData,
-        updatedAt: new Date().toISOString()
+        updated_at: new Date().toISOString()
       })
       .returning('*');
     

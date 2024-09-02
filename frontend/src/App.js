@@ -17,7 +17,8 @@ import QuestionDetail from './pages/QuestionDetail';
 import CreateQuestion from './pages/CreateQuestion'; 
 import UserRegistration from './components/UserRegistration';
 import PrivateRoute from './components/PrivateRoute';
-
+import CreateClass from './pages/CreateClass';
+import { ClassProvider } from './contexts/ClassContext';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,8 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+            <ClassProvider>
+
       <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -92,10 +95,20 @@ function App() {
           }
         />
         <Route 
+          path="/classes/create" 
+          element={
+            <PrivateRoute>
+              {user && user.role === 'teacher' ? <CreateClass /> : <Navigate to="/" />}
+            </PrivateRoute>
+          } 
+        />
+        <Route 
           path="*" 
           element={<Navigate to="/" replace />} 
         />
       </Routes>
+
+    </ClassProvider>
     </QueryClientProvider>
   );
 }

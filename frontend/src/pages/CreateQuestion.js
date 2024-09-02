@@ -15,6 +15,7 @@ import {
   FormControl,
   InputLabel
 } from '@mui/material';
+import { useClassContext } from '../contexts/ClassContext';
 
 function CreateQuestion() {
   const [title, setTitle] = useState('');
@@ -23,12 +24,12 @@ function CreateQuestion() {
   const [classes, setClasses] = useState([]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { currentClassId} = useClassContext();
 
   useEffect(() => {
     const fetchClasses = async () => {
       const response = await api.get('/classes');
       setClasses(response.data);
-      const currentClassId = localStorage.getItem('currentClassId');
       if (currentClassId) {
         setClassId(currentClassId);
       }

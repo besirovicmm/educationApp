@@ -22,13 +22,7 @@ function AssignmentDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState('');
-// const editCommentMutation = useMutation(async ({ commentId, content }) => {
-//     await api.put(`/comments/${commentId}`, { content });
-//   }, {
-//     onSuccess: () => {
-//       queryClient.invalidateQueries(['comments', 'lecture', id]);
-//     }
-//   });
+
   const { data: assignment, isLoading, error } = useQuery(['assignment', id], async () => {
     const response = await api.get(`/assignments/${id}`);
     return response.data;
@@ -73,7 +67,6 @@ function AssignmentDetail() {
     }
   };
 
-  
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     createCommentMutation.mutate(newComment);
@@ -84,17 +77,17 @@ function AssignmentDetail() {
       deleteCommentMutation.mutate(commentId);
     }
   };
-//   const handleCommentEdit = (commentId, newContent) => {
-//     editCommentMutation.mutate({ commentId, content: newContent });
-//   };
+
   const user = getUserFromLocalStorage();
+
+  const isDueDatePassed = new Date(assignment.dueDate) < new Date();
 
   return (
     <Box sx={{ maxWidth: 800, margin: 'auto', mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h4" gutterBottom>Assignment: {assignment.title}</Typography>
         <Box sx={{ maxHeight: 400, overflowY: 'auto', border: '1px solid #ccc', p: 2, mb: 2 }}>
-        <Typography variant="body1" paragraph>Description: {assignment.description}</Typography>
+          <Typography variant="body1" paragraph>Description: {assignment.description}</Typography>
         </Box>
         <Typography variant="body2">Due Date: {new Date(assignment.dueDate).toLocaleDateString()}</Typography>
         
@@ -105,7 +98,7 @@ function AssignmentDetail() {
           </Box>
         )}
       </Paper>
-        <Paper elevation={3} sx={{ p: 3 }}>
+      <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>Comments</Typography>
         <List>
           {comments.map((comment, index) => (
@@ -114,7 +107,6 @@ function AssignmentDetail() {
                 <Comment
                   comment={comment}
                   onDelete={handleCommentDelete}
-                //   onEdit={handleCommentEdit}
                   currentUserId={user.id}
                 />
               </ListItem>
@@ -123,21 +115,27 @@ function AssignmentDetail() {
           ))}
         </List>
 
-        <form onSubmit={handleCommentSubmit}>
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            variant="outlined"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment..."
-            sx={{ mt: 2 }}
-          />
-          <Button type="submit" variant="contained" color="primary" sx={{ mt: 1 }}>
-            Post Comment
-          </Button>
-        </form>
+        {!isDueDatePassed ? (
+          <form onSubmit={handleCommentSubmit}>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              variant="outlined"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+              sx={{ mt: 2 }}
+            />
+            <Button type="submit" variant="contained" color="primary" sx={{ mt: 1 }}>
+              Post Comment
+            </Button>
+          </form>
+        ) : (
+          <Typography color="error" sx={{ mt: 2 }}>
+            The due date for this assignment has passed. New comments are not allowed.
+          </Typography>
+        )}
       </Paper>
     </Box>
   );

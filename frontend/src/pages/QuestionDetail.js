@@ -15,12 +15,14 @@ import {
   ListItem,
   Divider
 } from '@mui/material';
+import { useClassContext } from '../contexts/ClassContext';
 
 function QuestionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState('');
+  const { currentClassId } = useClassContext();
 
   const { data: question, isLoading, error } = useQuery(['question', id], async () => {
     const response = await api.get(`/questions/${id}`);
@@ -84,7 +86,7 @@ function QuestionDetail() {
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Typography variant="h4" gutterBottom>Question: {question.title}</Typography>
         <Box sx={{ maxHeight: 400, overflowY: 'auto', border: '1px solid #ccc', p: 2, mb: 2 }}>
-        <Typography variant="body1" paragraph>Description: {question.description}</Typography>
+        <Typography variant="body1" paragraph>Description: {question.content}</Typography>
         </Box>
         {isTeacher() && (
           <Box sx={{ mt: 2 }}>

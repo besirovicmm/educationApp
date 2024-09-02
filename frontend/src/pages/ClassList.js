@@ -14,11 +14,14 @@ import {
   Paper
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useClassContext } from '../contexts/ClassContext';
+
 
 function ClassList() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
-
+  const { setCurrentClassId } = useClassContext();
+  
   const { data: classes, isLoading, error } = useQuery('classes', async () => {
     if (user.role === 'teacher') {
       const response = await api.get('/classes');
@@ -29,11 +32,15 @@ function ClassList() {
     enabled: user.role === 'teacher'
   });
 
+  // const handleClassSelect = (classId) => {
+  //   localStorage.setItem('currentClassId', classId);
+  //   navigate(`/class/${classId}`);
+  // };
   const handleClassSelect = (classId) => {
-    localStorage.setItem('currentClassId', classId);
+    console.log(classId);
+    setCurrentClassId(classId);
     navigate(`/class/${classId}`);
   };
-
   if (user.role === 'student') {
     return <Navigate to={`/class/${user.classId}`} />;
   }

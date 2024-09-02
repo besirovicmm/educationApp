@@ -4,14 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { Typography, List, ListItem, ListItemText, Button, Box, CircularProgress } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useClassContext } from '../contexts/ClassContext';
 
 function QuestionsList() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
+  const { currentClassId } = useClassContext();
 
   const { data: questions, isLoading, error } = useQuery('questions', async () => {
     const response = await api.get('/questions', {
-      params: user.role === 'student' ? { classId: user.classId } : {}
+      params: user.role === 'student' ? { classId: user.classId } : { classId: currentClassId }
     });
     return response.data;
   });
