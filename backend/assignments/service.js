@@ -9,7 +9,7 @@ class AssignmentsService {
     const stmt = classId
       ? db.prepare('SELECT * FROM assignments WHERE teacherId = ? AND classId = ?')
       : db.prepare('SELECT * FROM assignments WHERE teacherId = ?');
-    return classId ? stmt.all(teacherId, classId) : stmt.all(teacherId);
+    return classId ? stmt.all(Number(teacherId), Number(classId)) : stmt.all(Number(teacherId));
   }
 
   getAssignmentsByClassId(classId) {

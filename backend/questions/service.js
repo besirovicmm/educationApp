@@ -1,9 +1,19 @@
 const db = require('../db');
 
 class QuestionsService {
-  getAllQuestions(classId) {
-    const stmt = db.prepare('SELECT * FROM questions WHERE classId = ?');
-    return stmt.all(classId);
+  getAllQuestions(teacherId = null, classId = null) {
+    console.log(teacherId,'teacherId questions');
+    let stmt;
+    if (teacherId && classId) {
+      stmt = db.prepare('SELECT * FROM questions WHERE teacherId = ? AND classId = ?');
+      return stmt.all(teacherId, classId);
+    } else if (teacherId) {
+      stmt = db.prepare('SELECT * FROM questions WHERE teacherId = ?');
+      return stmt.all(teacherId);
+    } else {
+      stmt = db.prepare('SELECT * FROM questions');
+      return stmt.all();
+    }
   }
 
   getQuestionById(id) {

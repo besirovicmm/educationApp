@@ -3,13 +3,27 @@ const QuestionsService = require('./service');
 class QuestionsController {
   async getAllQuestions(req, res) {
     try {
+      const { role, id: userId } = req.user;  
       const { classId } = req.query;
-      const questions = await QuestionsService.getAllQuestions(classId);
+      let questions;
+  
+      if (role === 'teacher') {
+        questions = await QuestionsService.getAllQuestions(userId, classId);
+      } else if (role === 'student') {
+        if (!classId) {
+          return res.status(400).json({ message: 'Class ID is required for students' });
+        }
+        questions = await QuestionsService.getAllQuestions(null, classId);
+      } else {
+        return res.status(403).json({ message: 'Unauthorized role' });
+      }
+  
       res.json(questions);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   }
+  
 
   async getQuestionById(req, res) {
     try {
