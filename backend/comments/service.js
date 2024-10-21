@@ -1,67 +1,58 @@
-// comments/service.js
-const knex = require('../knex/knex');
+const db = require('../db');
 
 class CommentsService {
-  async getAllComments() {
-    return knex('comments').select('*');
+  getAllComments() {
+    return db.prepare('SELECT * FROM comments').all();
   }
 
-  async getCommentsByEntity(entityType, entityId, userId, role) {
-    let query = knex('comments')
-      .join('users', 'comments.userId', 'users.id')
-      .where('comments.entityType', entityType)
-      .andWhere('comments.entityId', entityId)
-      .select('comments.*', 'users.name as userName', 'users.role as userRole');
-
+  getCommentsByEntity(entityType, entityId, userId, role) {
+    let sql = `
+      SELECT comments.*, users.name as userName, users.role as userRole
+      FROM comments
+      JOIN users ON comments.userId = users.id
+      WHERE comments.entityType = ? AND comments.entityId = ?
+    `;
+    
     if (entityType === 'question' && role === 'student') {
-      // For students, only return their own comments on questions
-      query = query.where('comments.userId', userId);
+      sql += ' AND comments.userId = ?';
+      return db.prepare(sql).all(entityType, entityId, userId);
+    } else {
+      return db.prepare(sql).all(entityType, entityId);
     }
-
-    return query;
   }
 
-  async createComment(entityType, entityId, userId, content) {
-    console.log(userId);
-    const [newComment] = await knex('comments').insert({
-      entityType,
-      entityId,
-      userId,
-      content
-    }).returning('*');
-    return newComment;
+  createComment(entityType, entityId, userId, content) {
+    const stmt = db.prepare(`
+      INSERT INTO comments (entityType, entityId, userId, content)
+      VALUES (?, ?, ?, ?)
+    `);
+    const info = stmt.run(entityType, entityId, userId, content);
+    return this.getCommentById(info.lastInsertRowid);
   }
 
-
-  async updateComment(commentId, userId, content) {
-    const [updatedComment] = await knex('comments')
-      .where('id', commentId)
-      .andWhere(function() {
-        this.where('userId', userId)
-      })
-      .update({
-        content,
-        updated_at: new Date().toISOString()
-      })
-      .returning('*');
-
-    if (!updatedComment) {
+  updateComment(commentId, userId, content) {
+    const stmt = db.prepare(`
+      UPDATE comments
+      SET content = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND userId = ?
+    `);
+    const info = stmt.run(content, commentId, userId);
+    if (info.changes === 0) {
       throw new Error('Comment not found or unauthorized to update');
     }
-    return updatedComment;
+    return this.getCommentById(commentId);
   }
 
-  async deleteComment(commentId, userId) {
-    const deletedCount = await knex('comments')
-      .where('id', commentId)
-      .andWhere(function() {
-        this.where('userId', userId)
-      })
-      .del();
-
-    if (deletedCount === 0) {
+  deleteComment(commentId, userId) {
+    const stmt = db.prepare('DELETE FROM comments WHERE id = ? AND userId = ?');
+    const info = stmt.run(commentId, userId);
+    if (info.changes === 0) {
       throw new Error('Comment not found or unauthorized to delete');
     }
+  }
+
+  getCommentById(id) {
+    return db.prepare('SELECT * FROM comments WHERE id = ?').get(id);
   }
 }
 

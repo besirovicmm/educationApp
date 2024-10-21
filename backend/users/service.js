@@ -1,17 +1,15 @@
-// users/service.js
-const knex = require('../knex/knex');
+const db = require('../db');
 
 class UsersService {
-  async createUser({ username, password, role, classId, name }) {
-    const [userId] = await knex('users').insert({
-      username,
-      password,
-      role,
-      classId: role === 'student' ? classId : null,
-      name
-    }).returning('id');
+  createUser({ username, password, role, classId, name }) {
+    const stmt = db.prepare(`
+      INSERT INTO users (username, password, role, classId, name)
+      VALUES (?, ?, ?, ?, ?)
+    `);
 
-    return { id: userId };
+    const info = stmt.run(username, password, role, role === 'student' ? classId : null, name);
+
+    return { id: info.lastInsertRowid };
   }
 }
 

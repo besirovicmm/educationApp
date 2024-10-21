@@ -1,35 +1,38 @@
-const knex = require('../knex/knex');
+const db = require('../db');
 
 class QuestionsService {
-  async getAllQuestions(classId) {
-    return knex('questions').where('classId', classId);
+  getAllQuestions(classId) {
+    const stmt = db.prepare('SELECT * FROM questions WHERE classId = ?');
+    return stmt.all(classId);
   }
 
-  async getQuestionById(id) {
-    return knex('questions').where('id', id).first();
+  getQuestionById(id) {
+    const stmt = db.prepare('SELECT * FROM questions WHERE id = ?');
+    return stmt.get(id);
   }
 
-  async createQuestion(questionData) {
-    const [newQuestion] = await knex('questions').insert({
-      ...questionData
-    }).returning('*');
-    return newQuestion;
+  createQuestion(questionData) {
+    const stmt = db.prepare(`
+      INSERT INTO questions (title, content, teacherId, classId)
+      VALUES (?, ?, ?, ?)
+    `);
+    const info = stmt.run(questionData.title, questionData.content, questionData.teacherId, questionData.classId);
+    return this.getQuestionById(info.lastInsertRowid);
   }
 
-  async updateQuestion(id, questionData) {
-    const [updatedQuestion] = await knex('questions')
-      .where('id', id)
-      .update({
-        ...questionData,
-        updated_at: new Date().toISOString()
-      })
-      .returning('*');
-    return updatedQuestion;
+  updateQuestion(id, questionData) {
+    const stmt = db.prepare(`
+      UPDATE questions
+      SET title = ?, content = ?, teacherId = ?, classId = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+    stmt.run(questionData.title, questionData.content, questionData.teacherId, questionData.classId, id);
+    return this.getQuestionById(id);
   }
 
-  async deleteQuestion(id) {
-    // Note: Deleting associated comments should be handled by a database trigger or constraint
-    await knex('questions').where('id', id).del();
+  deleteQuestion(id) {
+    const stmt = db.prepare('DELETE FROM questions WHERE id = ?');
+    stmt.run(id);
   }
 }
 

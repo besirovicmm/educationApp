@@ -1,40 +1,40 @@
-// classes/service.js
-const knex = require('../knex/knex');
+const db = require('../db');
 
 class ClassesService {
-  async getAllClasses() {
-    return knex('classes');
+  getAllClasses() {
+    return db.prepare('SELECT * FROM classes').all();
   }
 
-  async getClassById(id) {
-    return knex('classes').where('id', id).first();
+  getClassById(id) {
+    return db.prepare('SELECT * FROM classes WHERE id = ?').get(id);
   }
 
-  async createClass(classData) {
-    const [newClass] = await knex('classes').insert({
-      ...classData
-    }).returning('*');
-    return newClass;
+  createClass(classData) {
+    const stmt = db.prepare(`
+      INSERT INTO classes (name, description)
+      VALUES (?, ?)
+    `);
+    const info = stmt.run(classData.name, classData.description);
+    return this.getClassById(info.lastInsertRowid);
   }
 
-  async updateClass(id, classData) {
-    const [updatedClass] = await knex('classes')
-      .where('id', id)
-      .update({
-        ...classData,
-        updated_at: new Date().toISOString()
-      })
-      .returning('*');
-    
-    if (!updatedClass) {
+  updateClass(id, classData) {
+    const stmt = db.prepare(`
+      UPDATE classes
+      SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+    const info = stmt.run(classData.name, classData.description, id);
+    if (info.changes === 0) {
       throw new Error('Class not found');
     }
-    return updatedClass;
+    return this.getClassById(id);
   }
 
-  async deleteClass(id) {
-    const deletedCount = await knex('classes').where('id', id).del();
-    if (deletedCount === 0) {
+  deleteClass(id) {
+    const stmt = db.prepare('DELETE FROM classes WHERE id = ?');
+    const info = stmt.run(id);
+    if (info.changes === 0) {
       throw new Error('Class not found');
     }
   }

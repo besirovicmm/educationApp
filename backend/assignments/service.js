@@ -1,58 +1,51 @@
-// assignments/service.js
-const knex = require('../knex/knex');
+const db = require('../db');
 
 class AssignmentsService {
-  async getAllAssignments() {
-    return knex('assignments').select('*');
+  getAllAssignments() {
+    return db.prepare('SELECT * FROM assignments').all();
   }
 
-  async getAssignmentsByTeacherId(teacherId, classId = null) {
-    let query = knex('assignments').where('teacherId', teacherId);
-
-    if (classId) {
-      query = query.where('classId', classId);
-    }
-
-    return query;
+  getAssignmentsByTeacherId(teacherId, classId = null) {
+    const stmt = classId
+      ? db.prepare('SELECT * FROM assignments WHERE teacherId = ? AND classId = ?')
+      : db.prepare('SELECT * FROM assignments WHERE teacherId = ?');
+    return classId ? stmt.all(teacherId, classId) : stmt.all(teacherId);
   }
 
-  async getAssignmentsByClassId(classId) {
-    return knex('assignments').where('classId', classId);
+  getAssignmentsByClassId(classId) {
+    return db.prepare('SELECT * FROM assignments WHERE classId = ?').all(classId);
   }
 
-  async getAssignmentsByClassId(classId) {
-    return knex('assignments').where('classId', classId);
+  getAssignmentById(id) {
+    return db.prepare('SELECT * FROM assignments WHERE id = ?').get(id);
   }
 
-  async getAssignmentById(id) {
-    return knex('assignments').where('id', id).first();
+  createAssignment(assignmentData) {
+    const stmt = db.prepare(`
+      INSERT INTO assignments (teacherId, classId, title, description)
+      VALUES (?, ?, ?, ?)
+    `);
+    const info = stmt.run(assignmentData.teacherId, assignmentData.classId, assignmentData.title, assignmentData.description);
+    return this.getAssignmentById(info.lastInsertRowid);
   }
 
-  async createAssignment(assignmentData) {
-    const [newAssignment] = await knex('assignments').insert({
-      ...assignmentData
-    }).returning('*');
-    return newAssignment;
-  }
-
-  async updateAssignment(id, assignmentData) {
-    const [updatedAssignment] = await knex('assignments')
-      .where('id', id)
-      .update({
-        ...assignmentData,
-        updated_at: new Date().toISOString()
-      })
-      .returning('*');
-    
-    if (!updatedAssignment) {
+  updateAssignment(id, assignmentData) {
+    const stmt = db.prepare(`
+      UPDATE assignments
+      SET title = ?, description = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+    const info = stmt.run(assignmentData.title, assignmentData.description, id);
+    if (info.changes === 0) {
       throw new Error('Assignment not found');
     }
-    return updatedAssignment;
+    return this.getAssignmentById(id);
   }
 
-  async deleteAssignment(id) {
-    const deletedCount = await knex('assignments').where('id', id).del();
-    if (deletedCount === 0) {
+  deleteAssignment(id) {
+    const stmt = db.prepare('DELETE FROM assignments WHERE id = ?');
+    const info = stmt.run(id);
+    if (info.changes === 0) {
       throw new Error('Assignment not found');
     }
   }

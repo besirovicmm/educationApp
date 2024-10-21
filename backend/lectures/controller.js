@@ -50,6 +50,7 @@ class LecturesController {
   }
 
   async createLecture(req, res) {
+    console.log('object');
     try {
       const { role, id: teacherId } = req.user;
       

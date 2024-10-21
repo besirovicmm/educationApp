@@ -1,62 +1,57 @@
-// lectures/service.js
-const knex = require('../knex/knex');
+const db = require('../db');
 
 class LecturesService {
-  async getAllLectures() {
-    return knex('lectures').select('*');
+  getAllLectures() {
+    return db.prepare('SELECT * FROM lectures').all();
   }
 
-  async getLecturesByTeacherId(teacherId, classId = null) {
-    let query = knex('lectures').where('teacherId', teacherId);
-
+  getLecturesByTeacherId(teacherId, classId = null) {
+    let stmt;
     if (classId) {
-      query = query.where('classId', classId);
+      stmt = db.prepare('SELECT * FROM lectures WHERE teacherId = ? AND classId = ?');
+      return stmt.all(teacherId, classId);
+    } else {
+      stmt = db.prepare('SELECT * FROM lectures WHERE teacherId = ?');
+      return stmt.all(teacherId);
     }
-
-    return query;
   }
 
-  async getLecturesByClassId(classId) {
-    return knex('lectures').where('classId', classId);
+  getLecturesByClassId(classId) {
+    const stmt = db.prepare('SELECT * FROM lectures WHERE classId = ?');
+    return stmt.all(classId);
   }
 
-  async getLecturesByClassId(classId) {
-    return knex('lectures').where('classId', classId);
+  getLectureById(id) {
+    const stmt = db.prepare('SELECT * FROM lectures WHERE id = ?');
+    return stmt.get(id);
   }
 
-  async getLecturesByClassId(classId) {
-    return knex('lectures').where('classId', classId);
+  createLecture(lectureData) {
+    const stmt = db.prepare(`
+      INSERT INTO lectures (title, content, teacherId, classId)
+      VALUES (?, ?, ?, ?)
+    `);
+    const info = stmt.run(lectureData.title, lectureData.content, lectureData.teacherId, lectureData.classId);
+    return this.getLectureById(info.lastInsertRowid);
   }
 
-  async getLectureById(id) {
-    return knex('lectures').where('id', id).first();
-  }
-
-  async createLecture(lectureData) {
-    const [newLecture] = await knex('lectures').insert({
-      ...lectureData
-    }).returning('*');
-    return newLecture;
-  }
-
-  async updateLecture(id, lectureData) {
-    const [updatedLecture] = await knex('lectures')
-      .where('id', id)
-      .update({
-        ...lectureData,
-        updated_at: new Date().toISOString()
-      })
-      .returning('*');
-    
-    if (!updatedLecture) {
+  updateLecture(id, lectureData) {
+    const stmt = db.prepare(`
+      UPDATE lectures
+      SET title = ?, content = ?, teacherId = ?, classId = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+    const info = stmt.run(lectureData.title, lectureData.content, lectureData.teacherId, lectureData.classId, id);
+    if (info.changes === 0) {
       throw new Error('Lecture not found');
     }
-    return updatedLecture;
+    return this.getLectureById(id);
   }
 
-  async deleteLecture(id) {
-    const deletedCount = await knex('lectures').where('id', id).del();
-    if (deletedCount === 0) {
+  deleteLecture(id) {
+    const stmt = db.prepare('DELETE FROM lectures WHERE id = ?');
+    const info = stmt.run(id);
+    if (info.changes === 0) {
       throw new Error('Lecture not found');
     }
   }

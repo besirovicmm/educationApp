@@ -1,46 +1,36 @@
-// pages/ClassList.js
 import React from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate, Navigate } from 'react-router-dom';
 import api from '../utils/api';
-import {
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  Box,
-  CircularProgress,
-  Paper
-} from '@mui/material';
+import { Typography, List, ListItem, ListItemText, Button, Box, CircularProgress, Paper } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useClassContext } from '../contexts/ClassContext';
-
 
 function ClassList() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
   const { setCurrentClassId } = useClassContext();
-  
+
   const { data: classes, isLoading, error } = useQuery('classes', async () => {
-    if (user.role === 'teacher') {
-      const response = await api.get('/classes');
-      return response.data;
+    const response = await api.get('/classes');
+    return response.data;
+  }, { 
+    enabled: !!user && user.role === 'teacher',
+    onError: (error) => {
+      console.error('Failed to fetch classes:', error);
     }
-    return null;
-  }, {
-    enabled: user.role === 'teacher'
   });
 
-  // const handleClassSelect = (classId) => {
-  //   localStorage.setItem('currentClassId', classId);
-  //   navigate(`/class/${classId}`);
-  // };
   const handleClassSelect = (classId) => {
     console.log(classId);
     setCurrentClassId(classId);
     navigate(`/class/${classId}`);
   };
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
   if (user.role === 'student') {
     return <Navigate to={`/class/${user.classId}`} />;
   }
@@ -66,16 +56,9 @@ function ClassList() {
           </Button>
           <Paper elevation={3}>
             <List>
-              {classes.map((cls) => (
-                <ListItem
-                  key={cls.id}
-                  button
-                  onClick={() => handleClassSelect(cls.id)}
-                >
-                  <ListItemText
-                    primary={cls.name}
-                    secondary={cls.description}
-                  />
+              {classes && classes.map((cls) => (
+                <ListItem key={cls.id} button onClick={() => handleClassSelect(cls.id)}>
+                  <ListItemText primary={cls.name} secondary={cls.description} />
                 </ListItem>
               ))}
             </List>
